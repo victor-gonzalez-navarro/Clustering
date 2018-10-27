@@ -10,6 +10,7 @@ from clust_alg.bisectingKmeans import BisectingKmeans
 from clust_alg.kmedoids import Kmedoids
 from clust_alg.pam import Pam
 from clust_alg.clarans import Clarans
+from clust_alg.fuzzyCMeans import FuzzyCMeans
 from eval_plot.evaluation import evaluate
 from preproc.preprocess_b import Preprocess_b
 
@@ -27,9 +28,9 @@ def obtain_arffs(path):
 # --------------------------------------------------------------------------------------------- Agglomerative Clustering
 def tester_agglomerative(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 2 # Number of clusters
+    num_clusters = 2        # Number of clusters
     affinity = 'euclidean'
-    linkage = 'ward'  # ['ward', 'complete', 'average']
+    linkage = 'ward'        # ['ward', 'complete', 'average']
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m'+'\nNumber of clusters: '+str(
         num_clusters)+'\nAffinity distance: '+affinity+'\nLinkage: '+linkage)
@@ -42,9 +43,9 @@ def tester_agglomerative(data_x, groundtruth_labels):
 # -------------------------------------------------------------------------------------------------------------- K-means
 def tester_kmeans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 4 # Number of clusters
-    num_tries_init = 2 # Number of different initializations of the centroids
-    max_iterations = 8 # Number of iterations for each initialization
+    num_clusters = 4        # Number of clusters
+    num_tries_init = 2      # Number of different initializations of the centroids
+    max_iterations = 8      # Number of iterations for each initialization
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m'+'\nNumber of clusters: '+str(
         num_clusters)+'\nNumber of different initilizations: '+str(num_tries_init)+'\nMaximum number of iterations '
@@ -58,9 +59,9 @@ def tester_kmeans(data_x, groundtruth_labels):
 # ---------------------------------------------------------------------------------------------------- Bisecting K-means
 def tester_bisectingKmeans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 2 # Number of clusters
-    max_iterations = 3 # Number of iterations for each initialization
-    max_bisect = 2  # For example, 2 will indicate that two clusters clusters will be split
+    num_clusters = 2        # Number of clusters
+    max_iterations = 3      # Number of iterations for each initialization
+    max_bisect = 2          # For example, 2 will indicate that two clusters clusters will be split
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m'+'\nNumber of clusters: '+str(
         num_clusters)+'\nNumber of clusters to split: '+str(max_bisect)+'\nMaximum number of iterations '
@@ -74,9 +75,9 @@ def tester_bisectingKmeans(data_x, groundtruth_labels):
 # ------------------------------------------------------------------------------------------------------------ K-medoids
 def tester_kmedoids(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 4 # Number of clusters
-    num_tries_init = 2 # Number of different initializations of the centroids
-    max_iterations = 4 # Number of iterations for each initialization
+    num_clusters = 4        # Number of clusters
+    num_tries_init = 2      # Number of different initializations of the centroids
+    max_iterations = 4      # Number of iterations for each initialization
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m' + '\nNumber of clusters: ' + str(
         num_clusters) + '\nNumber of different initilizations: ' + str(
@@ -89,8 +90,8 @@ def tester_kmedoids(data_x, groundtruth_labels):
 # ------------------------------------------------------------------------------------------------------------------ PAM
 def tester_pam(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 2 # Number of clusters
-    max_iterations = 3 # Number of iterations for each initialization
+    num_clusters = 2        # Number of clusters
+    max_iterations = 3      # Number of iterations for each initialization
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m' + '\nNumber of clusters: ' + str(
         num_clusters) + '\nMaximum number of iterations: ' + str(max_iterations))
@@ -103,10 +104,10 @@ def tester_pam(data_x, groundtruth_labels):
 # -------------------------------------------------------------------------------------------------------------- CLARANS
 def tester_clarans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 4 # Number of clusters
-    numlocal = 2 # Number of local minimum I want to search (parameter of CLARANS algorithm)
-    max_iterations = 8 # Number of iterations for each initialization
-    max_neighbor = 5 # If this number is very big, CLARANS becomes more similar to PAM
+    num_clusters = 4        # Number of clusters
+    numlocal = 2            # Number of local minimum I want to search (parameter of CLARANS algorithm)
+    max_iterations = 8      # Number of iterations for each initialization
+    max_neighbor = 5        # If this number is very big, CLARANS becomes more similar to PAM
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m' + '\nNumber of clusters: ' + str(
         num_clusters) + '\nNumber of different initilizations: ' + str(
@@ -116,6 +117,22 @@ def tester_clarans(data_x, groundtruth_labels):
     tst5 = Clarans(num_clusters, numlocal, max_iterations, max_neighbor)
     tst5.clarans_method(data_x)
     evaluate(tst5.labels_clarans, groundtruth_labels)
+
+# -------------------------------------------------------------------------------------------------------- FUZZY C-MEANS
+def tester_fuzzyCmeans(data_x, groundtruth_labels):
+    # HYPERPARAMETERS
+    num_clusters = 4        # Number of clusters
+    m = 1.5                 # The Fuzzy parameter can be any real number greater than 1
+    eps = 0.3               # Threshold of convergence
+    max_iterations = 100    # Max Number of iterations until convergence
+
+    print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m' + '\nNumber of clusters: ' + str(
+        num_clusters) + '\nM fuzzy parameter: ' + str(m) + '\nEps: ' + str(eps) +
+          '\nMaximum number of iterations: ' + str(max_iterations))
+
+    tst6 = FuzzyCMeans(num_clusters, m, eps, max_iterations)
+    tst6.fit(data_x)
+    evaluate(tst6.labels_fuzzyCM, groundtruth_labels)
 
 
 # ----------------------------------------------------------------------------------------------------------------- Main
@@ -134,8 +151,8 @@ def main():
 
     # Clustering algorithms
     print('\n\033[1m'+'Chose which clustering algorithm you want to test: '+'\033[0m')
-    print('OPTIONS: \n1) Agglomerative Clustering\n2) K-means \n3) Bisecting K-means \n4) K-meoids (implemented as '
-          'K-means) \n5) Partitioning Around Medoids (PAM) \n6) CLARANS')
+    print('OPTIONS: \n1) Agglomerative Clustering\n2) K-means \n3) Bisecting K-means \n4) K-medoids (implemented as '
+          'K-means) \n5) Partitioning Around Medoids (PAM) \n6) CLARANS \n7) Fuzzy C-Means')
     inputUser = int(input('Introduce the number and then press enter: '))
     mth = inputUser
 
@@ -151,6 +168,8 @@ def main():
         tester_pam(data_x, groundtruth_labels)
     elif mth == 6:
         tester_clarans(data_x, groundtruth_labels)
+    elif mth == 7:
+        tester_fuzzyCmeans(data_x, groundtruth_labels)
     else:
         print('The number introduced is not accpected')
 
