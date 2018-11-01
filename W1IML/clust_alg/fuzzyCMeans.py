@@ -6,13 +6,16 @@ from eval_plot.evaluation import ploting_v
 class FuzzyCMeans:
     labels_fuzzyCM = None
 
-    def __init__(self, n_clusters=2, m=1.5, eps=0.3, maxIter=100):
+    def __init__(self, n_clusters=2, m=2, eps=0.01, maxIter=100):
         self.maxIter = maxIter
         self.eps = eps
         self.n_clusters = n_clusters
         self.m = m
 
     def _init_membership_matrix(self, n_samples):
+        '''
+        Initialize the membership matrix randomly. Then, normalize it to sum one for each sample among clusters
+        '''
         membership_matrix = []
         for sample in range(n_samples):
             c_randoms = [np.random.rand() for c in range(self.n_clusters)]
@@ -48,6 +51,9 @@ class FuzzyCMeans:
         return memb_matrix
 
     def _get_clusters(self, memb_matrix):
+        '''
+        Returns the labels array given a membership matrix by selecting the cluster with maximum memb_value per sample
+        '''
         cluster_labels = []
         for i in range(memb_matrix.shape[0]):
             idx = max(range(self.n_clusters), key=lambda s: memb_matrix[i, s])
@@ -55,6 +61,9 @@ class FuzzyCMeans:
         return np.array(cluster_labels)
 
     def _get_sse_per_cluster(self, data, centers, labels):
+        '''
+        Returns the SSE per cluster
+        '''
         sse = np.zeros((centers.shape[0], 1))
         for i in range(data.shape[0]):
             sse[labels[i], 0] += np.linalg.norm(data[i, :] - centers[labels[i], :])**2

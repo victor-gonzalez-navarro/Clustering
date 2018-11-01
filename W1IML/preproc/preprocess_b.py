@@ -35,6 +35,6 @@ class Preprocess_b:
         if variable:
             data1 = np.concatenate((data1, data1[:, n_features].reshape(len(data1[:, i]), 1)), axis=1)
             data1 = np.delete(data1, features_to_delete, axis=1)
-            data1 = np.delete(data1, 0, axis=1)
+            #data1 = np.delete(data1, 0, axis=1)
 
         return data1

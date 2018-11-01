@@ -13,7 +13,7 @@ class Preprocess:
                 # Calculate the mean of this feature of feed NaNs with it
                 mean_v = np.nanmean(data[:, feature], dtype=float)
 
-                # Calculate the max and min to normalize numerical data
+                # Calculate the max and min to normalize numerical data between 0 and 1
                 max_v = np.nanmax(data[:, feature])
                 min_v = np.nanmin(data[:, feature])
 
@@ -40,3 +40,5 @@ class Preprocess:
 
                 # Delete categorical feature
                 data = np.delete(data, feature, 1)
+
+        return data
