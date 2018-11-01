@@ -28,7 +28,7 @@ class Kmedoids:
                                                                                        2)) + '\033[0m')
 
         # Scatter plot
-        ploting_v(data_x, self.num_clusters, self.labels_kmedoids)
+        # ploting_v(data_x, self.num_clusters, self.labels_kmedoids)
 
     # K-medoids algorithm for a particular initialization of medoids
     def kmedoids_algorithm(self, data_x, n_clusters, max_iterations, centroids, result_sse, result_labels):

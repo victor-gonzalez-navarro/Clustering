@@ -27,7 +27,7 @@ class Kmeans:
                                                                                           2)) + '\033[0m')
 
         # Scatter plot
-        ploting_v(data_x, self.num_clusters, self.labels_km)
+        # ploting_v(data_x, self.num_clusters, self.labels_km)
 
     # K-means algorithm for a particular initialization of centroids
     def kmeans_algorithm(self, data_x, n_clusters, max_iterations, centroids, result_sse, result_labels):

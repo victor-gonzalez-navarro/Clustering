@@ -90,6 +90,6 @@ class FuzzyCMeans:
         print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(total_see, 2)) + '\033[0m')
 
         # Scatter plot
-        ploting_v(data, self.n_clusters, self.labels_fuzzyCM)
+        # ploting_v(data, self.n_clusters, self.labels_fuzzyCM)
 
 

@@ -15,7 +15,7 @@ class Agglomerative:
             data_x)
 
         # Scatter plot
-        ploting_v(data_x, self.num_clusters, self.labels_agg)
+        # ploting_v(data_x, self.num_clusters, self.labels_agg)
 
         print('\033[1m'+'\nAccuracy:'+'\033[0m')
 
