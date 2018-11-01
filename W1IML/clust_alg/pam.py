@@ -22,7 +22,7 @@ class Pam:
         print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(result_sse,3)) + '\033[0m')
 
         # Scatter plot
-        ploting_v(data_x, self.num_clusters, self.labels_pam)
+        # ploting_v(data_x, self.num_clusters, self.labels_pam)
 
     # Pam algorithm for a particular initialization of medoids. This algorithm has been done following the cases
     # of the original paper of CLARANS so as to compute TCMP
@@ -35,12 +35,19 @@ class Pam:
         fin = 0
         iterations = 0
 
-        # Until max_iterations or min(TCMP)>0, assign each data to its closest medoid and recompute medoid
+        # Compute euclidean distance between all pairs of points
+        distance_mat = np.zeros((n_instances, n_instances))
+        for index1 in range(len(data_x)):
+            for index2 in range(index1 + 1, len(data_x)):
+                distance_mat[index1, index2] = np.sum((data_x[index1, :] - data_x[index2, :]) ** 2)
+                distance_mat[index2, index1] = distance_mat[index1, index2]
+
+                # Until max_iterations or min(TCMP)>0, assign each data to its closest medoid and recompute medoid
         while (iterations < max_iterations) and (fin == 0):
             matrix = np.ones((n_clusters, len(data_x))) * 10000
             # Decide cluster for each instance
             for i in range(0, n_clusters):
-                resta[:, i] = np.sum((data_x[:, :] - centroids[i, :]) ** 2, axis=1)
+                resta[:, i] = distance_mat[:, data_whereclusters[i]]
 
             # Compute SSE for that specific iteration
             SSE = np.sum(np.min(resta, axis=1))
@@ -56,26 +63,23 @@ class Pam:
                 # Op to denote the new medoid to replace Om
                 for k2 in range(len(data_x)):
                     if (k2 not in data_whereclusters):
-                        Op = data_x[k2, :]
                         # Change centroid k1 by data k2
-                        # centroids_mod[k1,:] = data1[k2,0:N_features]
                         TCMP = 0
                         # For all Oj I need to compute Cmpj
                         for k3 in range(len(data_x)):
                             Oj = data_x[k3, :]
-                            dist1 = np.sum((Oj - Op) ** 2)
-                            dist2 = np.sum((Oj - Om) ** 2)
+                            dist1 = distance_mat[k3, k2]
+                            dist2 = distance_mat[k3, data_whereclusters[k1]]
                             if (k3 not in data_whereclusters) and (k3 != k2):
                                 # Case 1 and 2: Oj currently belongs to the cluster represented by Om
                                 if lista[k3] == k1:
                                     ttt = []
                                     for tttid in range(n_clusters):
                                         if (centroids[tttid, 0] != Om[0]) and (centroids[tttid, 1] != Om[1]):
-                                            ttt.append(np.sum((Oj - centroids[tttid, :]) ** 2))
+                                            ttt.append(distance_mat[k3, data_whereclusters[tttid]])
                                         else:
                                             ttt.append(1000)
-                                    Oj2 = centroids[ttt.index(min(ttt)), :]
-                                    dist3 = np.sum((Oj - Oj2) ** 2)
+                                    dist3 = distance_mat[k3, data_whereclusters[ttt.index(min(ttt))]]
                                     # Case 2: Oj is less similar to Oj2 than to Op
                                     if dist1 < dist3:
                                         # d(Oj;Op) - d(Oj;Om)
@@ -87,9 +91,8 @@ class Pam:
 
                                 # Case 3 and 4: Oj currently belongs to a cluster other than the one represented by Om
                                 else:
-                                    Oj2 = centroids[lista[k3], :]
                                     # Case 3: Oj be more similar to Oj2 than to Op
-                                    dist4 = np.sum((Oj - Oj2) ** 2)
+                                    dist4 = distance_mat[k3, data_whereclusters[lista[k3]]]
                                     if dist1 > dist4:
                                         CMP = 0
                                     # Case 4: Oj is less similar to Oj2 than to Op
@@ -100,7 +103,7 @@ class Pam:
 
                         matrix[k1, k2] = TCMP
 
-            print('Minimum (TCMP) = ' + str(round(np.min(matrix),3)))
+            print('Minimum (TCMP) in iteration '+str(iterations)+' is = ' + str(round(np.min(matrix),3)))
             if np.min(matrix) >= 0:
                 fin = 1
             rowmin, colmin = np.unravel_index(matrix.argmin(), matrix.shape)
@@ -112,7 +115,7 @@ class Pam:
 
         # Compute euclidean distance between data points and medoids
         for i in range(0, n_clusters):
-            resta[:, i] = np.sum((data_x[:,:] - centroids[i, :]) ** 2, axis=1)
+            resta[:, i] = distance_mat[:, data_whereclusters[i]]
 
         # Assign each data to its closest centroid
         lista = np.argmin(resta, axis=1)  # put each instance to each cluster

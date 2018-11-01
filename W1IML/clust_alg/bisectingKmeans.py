@@ -37,7 +37,7 @@ class BisectingKmeans:
         print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(result_sse,3)) + '\033[0m')
 
         # Scatter plot
-        ploting_v(data_x, self.num_clusters, self.labels_bisectkm)
+        # ploting_v(data_x, self.num_clusters, self.labels_bisectkm)
 
     # Bisecting K-means algorithm for a particular initialization of centroids
     def bisectkmeans_algorithm(self, data_x, n_clusters, max_iterations, centroids, lista, cluster_split):

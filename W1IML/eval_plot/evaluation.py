@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
+from sklearn import metrics as mt
 
 # To evaluate the clustering algorithms
-def evaluate(labels_method, groundtruth_labels):
+def evaluate(labels_method, groundtruth_labels, data_x = None):
     n_instances = len(groundtruth_labels)
     f00 = 0; f01 = 0; f10 = 0; f11 = 0;
 
@@ -24,6 +25,9 @@ def evaluate(labels_method, groundtruth_labels):
 
     score_randstatistic = (f00 + f11) / (f00 + f01 + f10 + f11)
     print('The Rand Statistic score is: ' + '\033[1m'+'\033[94m'+str(round(score_randstatistic,3))+'\033[0m')
+
+    score_calinski = mt.calinski_harabaz_score(data_x,labels_method)
+    print('The Calinski Harabaz score is: ' + '\033[1m'+'\033[94m'+str(round(score_calinski,3))+'\033[0m')
 
     score_jaccardcoefficient = f11 / (f01 + f10 + f11)
     #print('The Jaccard Coefficient score is: ' + '\033[1m'+'\033[94m'+str(round(score_jaccardcoefficient,3))+'\033[0m')
