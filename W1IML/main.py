@@ -13,6 +13,7 @@ from clust_alg.pam import Pam
 from clust_alg.clarans import Clarans
 from clust_alg.fuzzyCMeans import FuzzyCMeans
 from eval_plot.evaluation import evaluate
+from preproc.preprocess import Preprocess
 from preproc.preprocess_b import Preprocess_b
 
 
@@ -43,7 +44,7 @@ def tester_agglomerative(data_x, groundtruth_labels):
 # -------------------------------------------------------------------------------------------------------------- K-means
 def tester_kmeans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 2        # Number of clusters
+    num_clusters = 5        # Number of clusters
     num_tries_init = 2      # Number of different initializations of the centroids
     max_iterations = 8      # Number of iterations for each initialization
 
@@ -136,7 +137,7 @@ def tester_clarans(data_x, groundtruth_labels):
 # -------------------------------------------------------------------------------------------------------- FUZZY C-MEANS
 def tester_fuzzyCmeans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 3        # Number of clusters
+    num_clusters = 5        # Number of clusters
     m = 2                   # The Fuzzy parameter can be any real number greater than 1
     eps = 0.01              # Threshold of convergence
     max_iterations = 100    # Max Number of iterations until convergence
@@ -156,13 +157,14 @@ def main():
     arffs_dic = obtain_arffs('./datasets/')
 
     # Extract an specific database
-    dat1 = arffs_dic['iris']
+    class_name = 'class'
+    dat1 = arffs_dic['nursery']
     df1 = pd.DataFrame(dat1[0])  # original data in pandas dataframe
-    groundtruth_labels = df1['class'].values  # original labels in a numpy array
-    df1 = df1.drop('class',1)
+    groundtruth_labels = df1[class_name].values  # original labels in a numpy array
+    df1 = df1.drop(class_name,1)
     data1 = df1.values  # original data in a numpy array without labels
-    load = Preprocess_b()
-    data_x = load.preprocess_methodb(data1)
+    load = Preprocess()
+    data_x = load.preprocess_method(data1)
 
     # Clustering algorithms
     print('\n\033[1m'+'Choose which clustering algorithm you want to test: '+'\033[0m')

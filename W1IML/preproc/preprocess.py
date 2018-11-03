@@ -5,6 +5,8 @@ import pandas as pd
 class Preprocess:
 
     def preprocess_method(self, data):
+        features_del = []
+
         for feature in range(data.shape[1]):
 
             # Numerical Features
@@ -38,7 +40,9 @@ class Preprocess:
                 data1 = np.array(pd.get_dummies(data[:,feature]))
                 data = np.concatenate((data, data1), axis=1)
 
-                # Delete categorical feature
-                data = np.delete(data, feature, 1)
+                features_del.append(feature)
+
+        # Delete categorical feature
+        data = np.delete(data, features_del, 1)
 
         return data
