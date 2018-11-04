@@ -1,9 +1,12 @@
 import numpy as np
-
+from matplotlib import pyplot
 from eval_plot.evaluation import ploting_v
 
 class Kmeans:
     labels_km = None
+
+    def _has_converged(self, prev_sse, curr_sse):
+        return abs(curr_sse - prev_sse) <= 0.1
 
     # Main algorithm
     def kmeans_method(self, data_x):
@@ -28,6 +31,14 @@ class Kmeans:
 
         # Scatter plot
         # ploting_v(data_x, self.num_clusters, self.labels_km)
+        pyplot.figure()
+        colour = iter(pyplot.cm.rainbow(np.linspace(0, 1, 4)))
+        for i in range(4):
+            pyplot.plot(data_x[self.labels_km == i, 0], data_x[self.labels_km == i, 1], color=next(colour),
+                        marker='.', linestyle='None')
+        pyplot.plot(centroids[:,0], centroids[:,1], 'ko')
+        pyplot.show()
+
 
     # K-means algorithm for a particular initialization of centroids
     def kmeans_algorithm(self, data_x, n_clusters, max_iterations, centroids, result_sse, result_labels):
@@ -35,6 +46,7 @@ class Kmeans:
         n_instances = data_x.shape[0]
         n_features = data_x.shape[1]
         resta = np.zeros((n_instances, n_clusters))
+        prev_SSE = 0
 
         # Until max_iterations, assign each data to its closest centroid and recompute centroids
         for iterations in range(0, max_iterations):
@@ -58,6 +70,11 @@ class Kmeans:
                 new_centroids[i, :] = np.sum(info, axis=0)
                 m_instpercluster[i] = np.sum(lista == i)
                 centroids[i, :] = new_centroids[i, :] / m_instpercluster[i]
+
+            if (self._has_converged(prev_SSE,SSE)):
+                break
+            else:
+                prev_SSE = SSE
 
         print('SSE for specific initialization ' + ' --> ' + str(round(SSE,2))+'\n')
         result_sse.append(SSE)

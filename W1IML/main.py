@@ -1,5 +1,6 @@
 import os
 import re
+import time
 
 import pandas as pd
 from scipy.io import arff
@@ -30,7 +31,7 @@ def obtain_arffs(path):
 # --------------------------------------------------------------------------------------------- Agglomerative Clustering
 def tester_agglomerative(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 2        # Number of clusters
+    num_clusters = 10        # Number of clusters
     affinity = 'euclidean'
     linkage = 'ward'        # ['ward', 'complete', 'average']
 
@@ -44,9 +45,9 @@ def tester_agglomerative(data_x, groundtruth_labels):
 # -------------------------------------------------------------------------------------------------------------- K-means
 def tester_kmeans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 5        # Number of clusters
+    num_clusters = 4        # Number of clusters
     num_tries_init = 2      # Number of different initializations of the centroids
-    max_iterations = 8      # Number of iterations for each initialization
+    max_iterations = 200      # Number of iterations for each initialization
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m'+'\nNumber of clusters: '+str(
         num_clusters)+'\nNumber of different initilizations: '+str(num_tries_init)+'\nMaximum number of iterations '
@@ -78,7 +79,7 @@ def tester_kmedoids(data_x, groundtruth_labels):
     # HYPERPARAMETERS
     num_clusters = 3        # Number of clusters
     num_tries_init = 2      # Number of different initializations of the centroids
-    max_iterations = 4      # Number of iterations for each initialization
+    max_iterations = 6      # Number of iterations for each initialization
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m' + '\nNumber of clusters: ' + str(
         num_clusters) + '\nNumber of different initilizations: ' + str(
@@ -93,14 +94,16 @@ def tester_kmedoids(data_x, groundtruth_labels):
 def tester_kmedoids_b(data_x, groundtruth_labels):
     # HYPERPARAMETERS
     num_clusters = 3        # Number of clusters
+    num_tries_init = 2      # Number of different initializations of the centroids
     max_iterations = 6      # Number of iterations for each initialization
 
     print('\n' + '\033[1m' + 'Chosen HYPERPARAMETERS: ' + '\033[0m' + '\nNumber of clusters: ' + str(
-        num_clusters) + '\nMaximum number of iterations: ' + str(max_iterations))
+        num_clusters) + '\nNumber of different initilizations: ' + str(num_tries_init) +
+          '\nMaximum number of iterations: ' + str(max_iterations))
 
-    tst3 = Kmedoids_b(num_clusters, max_iterations)
+    tst3 = Kmedoids_b(num_clusters, num_tries_init, max_iterations)
     tst3.fit(data_x)
-    evaluate(tst3.labels_, groundtruth_labels)
+    evaluate(tst3.labels_, groundtruth_labels, data_x)
 
 
 # ------------------------------------------------------------------------------------------------------------------ PAM
@@ -137,7 +140,7 @@ def tester_clarans(data_x, groundtruth_labels):
 # -------------------------------------------------------------------------------------------------------- FUZZY C-MEANS
 def tester_fuzzyCmeans(data_x, groundtruth_labels):
     # HYPERPARAMETERS
-    num_clusters = 5        # Number of clusters
+    num_clusters = 4        # Number of clusters
     m = 2                   # The Fuzzy parameter can be any real number greater than 1
     eps = 0.01              # Threshold of convergence
     max_iterations = 100    # Max Number of iterations until convergence
@@ -157,12 +160,14 @@ def main():
     arffs_dic = obtain_arffs('./datasets/')
 
     # Extract an specific database
-    class_name = 'class'
-    dat1 = arffs_dic['nursery']
-    df1 = pd.DataFrame(dat1[0])  # original data in pandas dataframe
-    groundtruth_labels = df1[class_name].values  # original labels in a numpy array
-    df1 = df1.drop(class_name,1)
-    data1 = df1.values  # original data in a numpy array without labels
+    dataset_name = 'grid'    # possible datasets ('hypothyroid', 'breast-w', 'waveform')
+    dat1 = arffs_dic[dataset_name]
+    df1 = pd.DataFrame(dat1[0])     # original data in pandas dataframe
+    groundtruth_labels = df1[df1.columns[len(df1.columns)-1]].values  # original labels in a numpy array
+    df1 = df1.drop(df1.columns[len(df1.columns)-1],1)
+    if dataset_name == 'hypothyroid':
+        df1 = df1.drop('TBG', 1)    # This column only contains NaNs so does not add any value to the clustering
+    data1 = df1.values              # original data in a numpy array without labels
     load = Preprocess()
     data_x = load.preprocess_method(data1)
 
@@ -173,6 +178,7 @@ def main():
     inputUser = int(input('Introduce the number and then press enter: '))
     mth = inputUser
 
+    start_time = time.time()
     if mth == 1:
         tester_agglomerative(data_x,groundtruth_labels)
     elif mth == 2:
@@ -188,7 +194,9 @@ def main():
     elif mth == 7:
         tester_fuzzyCmeans(data_x, groundtruth_labels)
     else:
-        print('The number introduced is not accpected')
+        print('The number introduced is not accepted')
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 # ----------------------------------------------------------------------------------------------------------------- Init

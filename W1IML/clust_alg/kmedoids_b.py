@@ -5,9 +5,10 @@ from eval_plot.evaluation import ploting_v
 class Kmedoids_b:
     labels_ = None
 
-    def __init__(self, n_clusters, max_iterations):
+    def __init__(self, n_clusters, num_tries_init, max_iterations):
         self.maxIter = max_iterations
         self.n_clusters = n_clusters
+        self.num_tries_init = num_tries_init
 
     def _sse(self, a, b):
         return sum([(xi - xj) ** 2 for xi, xj in zip(a, b)])    # squared 2-norm
@@ -50,25 +51,20 @@ class Kmedoids_b:
 
         return labels, c_costs
 
-    def fit(self, data):
-        print('\n' + '\033[1m' + 'Computing clusters with Fuzzy C-means algorithm...' + '\033[0m')
-
+    def kmedoids_algorithm(self, data, d_matrix, result_sse, result_labels):
         converged = False
         iteration = 0
         # List for the medoids that have already been chosen
         invalid_medoids = []
 
-        # Obtain the distance between each point in the dataset
-        d_matrix = self._obtain_distance_matrix(data, self._sse)
-
         # Select random medoids from the dataset
         medoids = self._select_random_medoids(range(data.shape[0]), invalid_medoids, self.n_clusters)
 
         # Cluster the data according to the previous medoids
-        self.labels_, c_costs = self._make_clusters(d_matrix, medoids)
+        labels_, c_costs = self._make_clusters(d_matrix, medoids)
 
         # Recompute the medoids for the clusters created
-        self._recompute_medoids(d_matrix, invalid_medoids, self.labels_, c_costs, medoids)
+        self._recompute_medoids(d_matrix, invalid_medoids, labels_, c_costs, medoids)
 
         # Repeat the update steps while the clustering has not converged yet
         while (not converged):
@@ -82,13 +78,35 @@ class Kmedoids_b:
 
             # It totally converges when the SSE does not decrease
             if (np.sum(c_costs) > np.sum(new_costs) and iteration < self.maxIter):
-                self.labels_ = np.copy(new_labels)
+                labels_ = np.copy(new_labels)
                 c_costs = np.copy(new_costs)
                 iteration += 1
             else:
                 converged = True
-                ploting_v(data, self.n_clusters, self.labels_)
+                # ploting_v(data, self.n_clusters, self.labels_)
 
-        print('It has converged at the ' + str(iteration) + 'th iteration.')
-        print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(np.sum(c_costs), 2)) + '\033[0m')
+        print('SSE for specific initialization ' + ' --> ' + str(round(np.sum(c_costs), 2)) + '\n')
+        result_sse.append(np.sum(c_costs))
+        result_labels.append(labels_)
+        return result_sse, result_labels
+
+    def fit(self, data):
+        print('\n' + '\033[1m' + 'Computing clusters with K-Medoids algorithm...' + '\033[0m')
+
+        # Obtain the distance between each point in the dataset
+        d_matrix = self._obtain_distance_matrix(data, self._sse)
+
+        result_labels = []
+        result_sse = []
+
+        # Compute kmeans for different initialization of the clusters
+        for nm in range(0, self.num_tries_init):
+            result_sse, result_labels = self.kmedoids_algorithm(data, d_matrix, result_sse, result_labels)
+
+        print('\033[1m' + 'Accuracy with initalization: ' + str(np.argmin(result_sse)) + ' (the best one)' + '\033[0m')
+        self.labels_ = np.array(result_labels[np.argmin(result_sse)]).reshape(data.shape[0],)
+        print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(min(result_sse),
+                                                                                          2)) + '\033[0m')
+
+
 
