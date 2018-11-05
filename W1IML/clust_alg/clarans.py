@@ -5,6 +5,13 @@ from eval_plot.evaluation import ploting_v
 class Clarans:
     labels_clarans = None
 
+    # Constructor
+    def __init__(self, num_clusters, numlocal, max_iterations, max_neighbour):
+        self.num_clusters = num_clusters
+        self.numlocal = numlocal
+        self.max_iterations = max_iterations
+        self.max_neighbour = max_neighbour
+
     # Main algorithm
     def clarans_method(self, data_x):
         print('\n' + '\033[1m' + 'Computing clusters with CLARANS algorithm...' + '\033[0m')
@@ -141,10 +148,3 @@ class Clarans:
         listLabels.append(lista)
         listcentro.append(centroids)
         return listSSE, listLabels, listcentro
-
-    # Constructor
-    def __init__(self, num_clusters, numlocal, max_iterations, max_neighbour):
-        self.num_clusters = num_clusters
-        self.numlocal = numlocal
-        self.max_iterations = max_iterations
-        self.max_neighbour = max_neighbour

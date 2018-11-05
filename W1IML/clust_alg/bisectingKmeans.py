@@ -6,6 +6,12 @@ from eval_plot.evaluation import ploting_v
 class BisectingKmeans:
     labels_bisectkm = None
 
+    # Constructor
+    def __init__(self, num_clusters, max_iterations, max_bisect):
+        self.num_clusters = num_clusters
+        self.max_iterations = max_iterations
+        self.max_bisect = max_bisect
+
     # Main algorithm
     def bisectkmeans_method(self, data_x):
         print('\n'+'\033[1m'+'Computing clusters with Bisecting K-means algorithm...'+'\033[0m')
@@ -85,9 +91,3 @@ class BisectingKmeans:
                 centroids[i, :] = new_centroids[i, :] / m_instpercluster[i]
 
         return lista, m_instpercluster, SSE
-
-    # Constructor
-    def __init__(self, num_clusters, max_iterations, max_bisect):
-        self.num_clusters = num_clusters
-        self.max_iterations = max_iterations
-        self.max_bisect = max_bisect

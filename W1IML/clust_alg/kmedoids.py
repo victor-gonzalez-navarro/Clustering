@@ -2,7 +2,7 @@ import numpy as np
 import random
 from eval_plot.evaluation import ploting_v
 
-class Kmedoids_b:
+class Kmedoids:
     labels_ = None
 
     def __init__(self, n_clusters, num_tries_init, max_iterations):

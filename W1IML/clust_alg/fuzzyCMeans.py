@@ -1,7 +1,6 @@
 import numpy as np
 
 from eval_plot.evaluation import ploting_v
-from matplotlib import pyplot
 
 class FuzzyCMeans:
     labels_fuzzyCM = None
@@ -100,5 +99,3 @@ class FuzzyCMeans:
 
         # Scatter plot
         # ploting_v(data, self.n_clusters, self.labels_fuzzyCM)
-
-

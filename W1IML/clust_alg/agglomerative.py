@@ -5,6 +5,11 @@ from eval_plot.evaluation import ploting_v
 class Agglomerative:
     labels_agg = None
 
+    # Constructor
+    def __init__(self, num_clusters=2, affinity='euclidean', linkage='ward'):
+        self.num_clusters = num_clusters
+        self.affinity = affinity
+        self.linkage = linkage
 
     # Main algorithm
     def agglomerative_method(self, data_x):
@@ -18,10 +23,3 @@ class Agglomerative:
         # ploting_v(data_x, self.num_clusters, self.labels_agg)
 
         print('\033[1m'+'\nAccuracy:'+'\033[0m')
-
-
-    # Constructor
-    def __init__(self, num_clusters =2, affinity='euclidean', linkage='ward'):
-        self.num_clusters = num_clusters
-        self.affinity = affinity
-        self.linkage = linkage

@@ -6,6 +6,11 @@ from eval_plot.evaluation import ploting_v
 class Pam:
     labels_pam = None
 
+    # Constructor
+    def __init__(self, num_clusters, max_iterations):
+        self.num_clusters = num_clusters
+        self.max_iterations = max_iterations
+
     # Main algorithm
     def pam_method(self, data_x):
         print('\n'+'\033[1m'+'Computing clusters with PAM algorithm... (this algorithm has a computational '
@@ -120,8 +125,3 @@ class Pam:
         # Assign each data to its closest centroid
         lista = np.argmin(resta, axis=1)  # put each instance to each cluster
         return lista, SSE
-
-    # Constructor
-    def __init__(self, num_clusters, max_iterations):
-        self.num_clusters = num_clusters
-        self.max_iterations = max_iterations
