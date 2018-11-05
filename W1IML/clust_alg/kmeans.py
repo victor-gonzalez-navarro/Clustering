@@ -5,8 +5,14 @@ from eval_plot.evaluation import ploting_v
 class Kmeans:
     labels_km = None
 
-    def _has_converged(self, prev_sse, curr_sse):
-        return abs(curr_sse - prev_sse) <= 0.1
+    # Constructor
+    def __init__(self, num_clusters, num_tries_init, max_iterations):
+        self.num_clusters = num_clusters
+        self.num_tries_init = num_tries_init
+        self.max_iterations = max_iterations
+
+    def _has_converged(self, prev, curr):
+        return sum(abs(np.subtract(prev,curr))) == 0
 
     # Main algorithm
     def kmeans_method(self, data_x):
@@ -31,13 +37,6 @@ class Kmeans:
 
         # Scatter plot
         # ploting_v(data_x, self.num_clusters, self.labels_km)
-        pyplot.figure()
-        colour = iter(pyplot.cm.rainbow(np.linspace(0, 1, 4)))
-        for i in range(4):
-            pyplot.plot(data_x[self.labels_km == i, 0], data_x[self.labels_km == i, 1], color=next(colour),
-                        marker='.', linestyle='None')
-        pyplot.plot(centroids[:,0], centroids[:,1], 'ko')
-        pyplot.show()
 
 
     # K-means algorithm for a particular initialization of centroids
@@ -46,7 +45,7 @@ class Kmeans:
         n_instances = data_x.shape[0]
         n_features = data_x.shape[1]
         resta = np.zeros((n_instances, n_clusters))
-        prev_SSE = 0
+        prev_m_instpercluster = [0] * n_clusters
 
         # Until max_iterations, assign each data to its closest centroid and recompute centroids
         for iterations in range(0, max_iterations):
@@ -69,20 +68,14 @@ class Kmeans:
                 info = data_x[np.argwhere(lista == i).reshape(np.argwhere(lista == i).shape[0], ), :]
                 new_centroids[i, :] = np.sum(info, axis=0)
                 m_instpercluster[i] = np.sum(lista == i)
-                centroids[i, :] = new_centroids[i, :] / m_instpercluster[i]
+                centroids[i, :] = new_centroids[i, :] / (m_instpercluster[i] + 0.0000001)   # Smoothing technique
 
-            if (self._has_converged(prev_SSE,SSE)):
+            if (self._has_converged(prev_m_instpercluster,m_instpercluster)):
                 break
             else:
-                prev_SSE = SSE
+                prev_m_instpercluster = np.copy(m_instpercluster)
 
         print('SSE for specific initialization ' + ' --> ' + str(round(SSE,2))+'\n')
         result_sse.append(SSE)
         result_labels.append(lista)
         return result_sse, result_labels
-
-    # Constructor
-    def __init__(self, num_clusters, num_tries_init, max_iterations):
-        self.num_clusters = num_clusters
-        self.num_tries_init = num_tries_init
-        self.max_iterations = max_iterations

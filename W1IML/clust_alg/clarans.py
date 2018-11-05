@@ -34,7 +34,7 @@ class Clarans:
         print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(min(listSSE), 2)) + '\033[0m')
 
         # Scatter plot
-        ploting_v(data_x, self.num_clusters, self.labels_clarans)
+        # ploting_v(data_x, self.num_clusters, self.labels_clarans)
 
     # CLARANS algorithm for a particular initialization of medoids. This algorithm has been done following the cases
     # of the original paper so as to compute TCMP

@@ -1,7 +1,7 @@
 import numpy as np
 
 from eval_plot.evaluation import ploting_v
-
+from matplotlib import pyplot
 
 class FuzzyCMeans:
     labels_fuzzyCM = None
@@ -80,12 +80,12 @@ class FuzzyCMeans:
         iteration = 0
         converged = False
 
-        while (not converged and iteration < self.maxIter):
+        while (not converged):
             # At k-step: calculate the center vectors C=[c_j] with U
             centers = self._calculate_center_vecs(memb_matrix, data)
             # Update U with the new center vectors C
             new_m_matrix = self._update_memb_matrix(data, centers)
-            if (np.linalg.norm(new_m_matrix - memb_matrix) < self.eps):
+            if (np.linalg.norm(new_m_matrix - memb_matrix) < self.eps or iteration == self.maxIter):
                 converged = True
                 self.labels_fuzzyCM = self._get_clusters(memb_matrix)
             else:
@@ -99,6 +99,6 @@ class FuzzyCMeans:
         print('The SSE (sum of squared errors) is: ' + '\033[1m' + '\033[94m' + str(round(total_see, 2)) + '\033[0m')
 
         # Scatter plot
-        #ploting_v(data, self.n_clusters, self.labels_fuzzyCM)
+        # ploting_v(data, self.n_clusters, self.labels_fuzzyCM)
 
 
